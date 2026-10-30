@@ -639,7 +639,7 @@ const CONFIG = {
   autor: "Eduardo del Faro",
   sello: "Bitácoras del Faro",
   kofi: "https://ko-fi.com/bitacorasdelfaro",
-  correo: "cheuquelaf.eduardo@gmail.com",   // Las sugerencias del buzón llegan aquí (vía FormSubmit). Tras activarlo, puedes reemplazarlo por el código que te envían.
+  buzonClave: "488e66c4-f582-4a31-8407-92e9d2bb6cdc",   // Access Key de Web3Forms: las sugerencias del buzón llegan a tu correo. Vacío = buzón oculto.
   logo: "",   // Ruta o URL de tu logo (ej.: "logo.png" subido junto a index.html). Vacío = faro dibujado.
   expansiones: false   // false = solo libro básico. Para activar expansiones: pon true y agrega sus datos en <script id="datos-exp">.
 };
@@ -1635,8 +1635,8 @@ $('#bajarMacro').onclick = () => {
   a.download = 'importar-personaje-bsh.js'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 };
 
-// ---------- buzón de sugerencias (FormSubmit) ----------
-$('#buzon').hidden = !CONFIG.correo;
+// ---------- buzón de sugerencias (Web3Forms) ----------
+$('#buzon').hidden = !CONFIG.buzonClave;
 $('#buzon').onsubmit = async e => {
   e.preventDefault();
   const f = e.target, est = $('#bEstado'), btn = $('#bEnviar');
@@ -1644,13 +1644,15 @@ $('#buzon').onsubmit = async e => {
   if (!f.mensaje.value.trim()) { est.className = 'estado mal'; est.textContent = t('bVacio'); f.mensaje.focus(); return; }
   btn.disabled = true; est.className = 'estado'; est.textContent = t('bEnviando');
   try {
-    // Envío clásico (sin leer respuesta): FormSubmit no permite leerla desde otros sitios (CORS)
-    const fd = new FormData();
-    const campos = { _subject: 'Forja de la Espada Negra: sugerencia', _template: 'table', _captcha: 'false',
-      mensaje: f.mensaje.value.trim(), nombre: f.nombre.value.trim() || '—', correo: f.correo.value.trim() || '—', idioma: LANG.toUpperCase() };
-    if (f.correo.value.trim()) campos._replyto = f.correo.value.trim();
-    Object.entries(campos).forEach(([k, v]) => fd.append(k, v));
-    await fetch(`https://formsubmit.co/${CONFIG.correo}`, { method: 'POST', mode: 'no-cors', body: fd });
+    const correo = f.correo.value.trim();
+    const datos = { access_key: CONFIG.buzonClave, subject: 'Forja de la Espada Negra: sugerencia',
+      from_name: 'Forja de la Espada Negra', botcheck: '',
+      mensaje: f.mensaje.value.trim(), nombre: f.nombre.value.trim() || '—', correo: correo || '—', idioma: LANG.toUpperCase() };
+    if (correo) datos.replyto = correo;
+    const r = await fetch('https://api.web3forms.com/submit', { method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(datos) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.success) throw new Error(j.message || r.status);
     est.className = 'estado ok'; est.textContent = t('bOk'); f.reset();
   } catch { est.className = 'estado mal'; est.textContent = t('bMal'); }
   btn.disabled = false;
