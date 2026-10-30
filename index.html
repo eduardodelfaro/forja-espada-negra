@@ -720,7 +720,7 @@ const I18N = {
     macroP3: 'Ejecútala, pega el código de tu personaje y listo.', macroCopiar: '📋 Copiar macro', macroBajar: 'Descargar .js', tMacro: 'Macro copiada',
     buzonTitulo: 'Buzón de sugerencias', buzonAyuda: '¿Encontraste un error o tienes una idea para mejorar la Forja? Escríbeme.',
     buzonMensaje: 'Mensaje', buzonNombre: 'Nombre (opcional)', buzonCorreo: 'Correo, si quieres respuesta (opcional)', buzonEnviar: 'Enviar',
-    bEnviando: 'Enviando…', bOk: '¡Gracias! Tu mensaje llegó.', bMal: 'No se pudo enviar. Inténtalo más tarde.', bVacio: 'Escribe un mensaje primero.',
+    bEnviando: 'Enviando…', bOk: '¡Gracias! Mensaje enviado.', bMal: 'No se pudo enviar. Inténtalo más tarde.', bVacio: 'Escribe un mensaje primero.',
     apoyoTexto: '¿Te sirvió la Forja? Invítame un café en Ko-fi y ayúdame a seguir creando herramientas para la mesa.',
     legal: `<p><strong>Herramienta gratuita y sin fines de lucro, hecha por un fan con el visto bueno de The Merry Mushmen.</strong> Las donaciones son voluntarias y no dan acceso a contenido extra.</p>
       <p><strong>Licencia:</strong> esta herramienta usa material del <a href="https://blackswordhack.github.io/" target="_blank" rel="noopener">System Reference Document de Black Sword Hack: Ultimate Chaos Edition</a>, de Alexandre «Kobayashi» Jeannette y The Merry Mushmen, publicado bajo licencia <a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener">Creative Commons Atribución 4.0 Internacional (CC BY 4.0)</a>. Las reglas aparecen resumidas y adaptadas; la versión en español es una traducción no oficial. Las tablas de rasgos estéticos son creación propia. No es un producto oficial de The Merry Mushmen.</p>
@@ -778,7 +778,7 @@ const I18N = {
     macroP3: 'Run it, paste your character code, done.', macroCopiar: '📋 Copy macro', macroBajar: 'Download .js', tMacro: 'Macro copied',
     buzonTitulo: 'Suggestion box', buzonAyuda: 'Found a bug or have an idea to improve the Forge? Write to me.',
     buzonMensaje: 'Message', buzonNombre: 'Name (optional)', buzonCorreo: 'Email, if you want a reply (optional)', buzonEnviar: 'Send',
-    bEnviando: 'Sending…', bOk: 'Thank you! Your message arrived.', bMal: 'Could not send. Please try again later.', bVacio: 'Write a message first.',
+    bEnviando: 'Sending…', bOk: 'Thank you! Message sent.', bMal: 'Could not send. Please try again later.', bVacio: 'Write a message first.',
     apoyoTexto: 'Did the Forge help your table? Buy me a coffee on Ko-fi and help me keep making tools for players.',
     legal: `<p><strong>A free, non-profit fan-made tool, made with the blessing of The Merry Mushmen.</strong> Donations are voluntary and do not unlock any extra content.</p>
       <p><strong>License:</strong> this tool uses material from the <a href="https://blackswordhack.github.io/" target="_blank" rel="noopener">Black Sword Hack: Ultimate Chaos Edition System Reference Document</a> by Alexandre "Kobayashi" Jeannette and The Merry Mushmen, released under the <a href="https://creativecommons.org/licenses/by/4.0/deed.en" target="_blank" rel="noopener">Creative Commons Attribution 4.0 International license (CC BY 4.0)</a>. Rules are summarized and adapted. The aesthetic trait tables are original. This is not an official Merry Mushmen product.</p>
@@ -836,7 +836,7 @@ const I18N = {
     macroP3: 'Lance-la, colle le code de ton personnage, c\'est fait.', macroCopiar: '📋 Copier la macro', macroBajar: 'Télécharger .js', tMacro: 'Macro copiée',
     buzonTitulo: 'Boîte à idées', buzonAyuda: 'Tu as trouvé un bug ou tu as une idée pour améliorer la Forge ? Écris-moi.',
     buzonMensaje: 'Message', buzonNombre: 'Nom (facultatif)', buzonCorreo: 'E-mail, si tu veux une réponse (facultatif)', buzonEnviar: 'Envoyer',
-    bEnviando: 'Envoi…', bOk: 'Merci ! Ton message est bien arrivé.', bMal: 'Envoi impossible. Réessaie plus tard.', bVacio: 'Écris d\'abord un message.',
+    bEnviando: 'Envoi…', bOk: 'Merci ! Message envoyé.', bMal: 'Envoi impossible. Réessaie plus tard.', bVacio: 'Écris d\'abord un message.',
     apoyoTexto: 'La Forge t\'a été utile ? Offre-moi un café sur Ko-fi et aide-moi à continuer de créer des outils pour la table.',
     legal: `<p><strong>Outil gratuit, sans but lucratif, créé par un fan avec l'accord de The Merry Mushmen.</strong> Les dons sont volontaires et ne débloquent aucun contenu supplémentaire.</p>
       <p><strong>Licence :</strong> cet outil utilise du matériel du <a href="https://blackswordhack.github.io/index-fr.html" target="_blank" rel="noopener">System Reference Document de Black Sword Hack : Ultimate Chaos Edition</a>, d'Alexandre « Kobayashi » Jeannette et The Merry Mushmen, publié sous licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" target="_blank" rel="noopener">Creative Commons Attribution 4.0 International (CC BY 4.0)</a>. Les règles sont résumées et adaptées. Les tables de traits esthétiques sont originales. Ce n'est pas un produit officiel de The Merry Mushmen.</p>
@@ -1644,14 +1644,13 @@ $('#buzon').onsubmit = async e => {
   if (!f.mensaje.value.trim()) { est.className = 'estado mal'; est.textContent = t('bVacio'); f.mensaje.focus(); return; }
   btn.disabled = true; est.className = 'estado'; est.textContent = t('bEnviando');
   try {
-    const r = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(CONFIG.correo)}`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ _subject: 'Forja de la Espada Negra: sugerencia', _template: 'table', _captcha: 'false',
-        mensaje: f.mensaje.value.trim(), nombre: f.nombre.value.trim() || '—', correo: f.correo.value.trim() || '—', idioma: LANG.toUpperCase(),
-        ...(f.correo.value.trim() ? { _replyto: f.correo.value.trim() } : {}) })
-    });
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok || String(j.success) === 'false') throw 0;
+    // Envío clásico (sin leer respuesta): FormSubmit no permite leerla desde otros sitios (CORS)
+    const fd = new FormData();
+    const campos = { _subject: 'Forja de la Espada Negra: sugerencia', _template: 'table', _captcha: 'false',
+      mensaje: f.mensaje.value.trim(), nombre: f.nombre.value.trim() || '—', correo: f.correo.value.trim() || '—', idioma: LANG.toUpperCase() };
+    if (f.correo.value.trim()) campos._replyto = f.correo.value.trim();
+    Object.entries(campos).forEach(([k, v]) => fd.append(k, v));
+    await fetch(`https://formsubmit.co/${CONFIG.correo}`, { method: 'POST', mode: 'no-cors', body: fd });
     est.className = 'estado ok'; est.textContent = t('bOk'); f.reset();
   } catch { est.className = 'estado mal'; est.textContent = t('bMal'); }
   btn.disabled = false;
